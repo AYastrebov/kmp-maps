@@ -3,15 +3,12 @@ import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-version = "0.9.1"
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetBrains.compose)
     alias(libs.plugins.jetBrains.kotlin.multiplatform)
     alias(libs.plugins.jetBrains.kotlin.plugin.compose)
     alias(libs.plugins.buildkonfig)
-    kotlin("native.cocoapods")
 }
 
 val googleMapsApiKey = gradleLocalProperties(rootDir, providers).getProperty("MAPS_API_KEY") ?: ""
@@ -29,23 +26,6 @@ kotlin {
     }
 
     jvm()
-
-    cocoapods {
-        summary = "Universal map component for Compose Multiplatform."
-        homepage = "https://github.com/software-mansion/kmp-maps"
-        version = "0.9.1"
-        ios.deploymentTarget = "16.0"
-        framework {
-            baseName = "Sample"
-            isStatic = true
-        }
-
-        pod("GoogleMaps") { version = "10.4.0" }
-        pod("Google-Maps-iOS-Utils") {
-            version = "6.1.3"
-            moduleName = "GoogleMapsUtils"
-        }
-    }
 
     sourceSets {
         androidMain.dependencies {

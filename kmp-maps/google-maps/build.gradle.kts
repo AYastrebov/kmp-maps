@@ -1,3 +1,7 @@
+@file:OptIn(ExperimentalKotlinGradlePluginApi::class)
+
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetBrains.compose)
@@ -5,7 +9,6 @@ plugins {
     alias(libs.plugins.jetBrains.kotlin.multiplatform)
     alias(libs.plugins.jetBrains.kotlin.plugin.compose)
     alias(libs.plugins.vanniktech.maven.publish)
-    kotlin("native.cocoapods")
 }
 
 kotlin {
@@ -22,19 +25,20 @@ kotlin {
 
     jvm()
 
-    cocoapods {
-        summary = "Universal map component for Compose Multiplatform."
-        homepage = "https://github.com/software-mansion/kmp-maps"
-        ios.deploymentTarget = "16.0"
-        framework {
-            baseName = "google-maps"
-            isStatic = true
-        }
-        pod("GoogleMaps") { version = "10.4.0" }
-        pod("Google-Maps-iOS-Utils") {
-            version = "6.1.3"
-            moduleName = "GoogleMapsUtils"
-        }
+    compilerOptions { optIn.add("kotlinx.cinterop.ExperimentalForeignApi") }
+
+    swiftPMDependencies {
+        iosMinimumDeploymentTarget = libs.versions.ios.deploymentTarget.get()
+        swiftPackage(
+            url = url("https://github.com/googlemaps/ios-maps-sdk.git"),
+            version = exact(libs.versions.googleMapsIos.get()),
+            products = listOf(product("GoogleMaps")),
+        )
+        swiftPackage(
+            url = url("https://github.com/googlemaps/google-maps-ios-utils.git"),
+            version = from(libs.versions.googleMapsIosUtils.get()),
+            products = listOf(product("GoogleMapsUtils")),
+        )
     }
 
     sourceSets {
