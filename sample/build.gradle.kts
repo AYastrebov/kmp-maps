@@ -2,6 +2,7 @@ import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import java.util.Properties
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
     alias(libs.plugins.android.kotlin.multiplatform.library)
@@ -31,13 +32,20 @@ kotlin {
         compilerOptions { jvmTarget.set(JvmTarget.JVM_11) }
     }
 
-    listOf(iosArm64(), iosSimulatorArm64()).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "Sample"
-            isStatic = true
-            binaryOption("bundleId", "com.swmansion.kmpmaps.sample")
+    iosArm64()
+    iosSimulatorArm64()
+    targets
+        .withType<KotlinNativeTarget>()
+        .matching { it.konanTarget.family.isAppleFamily }
+        .configureEach {
+            binaries {
+                framework {
+                    baseName = "Sample"
+                    isStatic = true
+                    binaryOption("bundleId", "com.swmansion.kmpmaps.sample")
+                }
+            }
         }
-    }
 
     jvm()
 

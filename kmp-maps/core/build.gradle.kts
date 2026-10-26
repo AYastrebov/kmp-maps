@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+
 plugins {
     alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.jetBrains.compose)
@@ -17,12 +19,19 @@ kotlin {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
 
-    listOf(iosArm64(), iosSimulatorArm64()).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "core"
-            isStatic = true
+    iosArm64()
+    iosSimulatorArm64()
+    targets
+        .withType<KotlinNativeTarget>()
+        .matching { it.konanTarget.family.isAppleFamily }
+        .configureEach {
+            binaries {
+                framework {
+                    baseName = "core"
+                    isStatic = true
+                }
+            }
         }
-    }
 
     jvm()
 
