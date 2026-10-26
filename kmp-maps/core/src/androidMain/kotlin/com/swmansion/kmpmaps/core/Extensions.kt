@@ -368,7 +368,6 @@ private fun GoogleGeoJsonLayer.applyStylesFrom(geo: GeoJsonLayer) {
         val jsonFill = feature.getProperty("fill")
         val jsonFillOpacity = feature.getProperty("fill-opacity")
         val jsonWidth = feature.getProperty("stroke-width")?.toFloatOrNull()
-        val width = jsonWidth ?: DEFAULT_STROKE_WIDTH
 
         when (feature.getGeometry()) {
             is GeoJsonLineString,
@@ -381,7 +380,7 @@ private fun GoogleGeoJsonLayer.applyStylesFrom(geo: GeoJsonLayer) {
                 feature.lineStringStyle =
                     GeoJsonLineStringStyle().apply {
                         color = strokeColor
-                        setWidth(width)
+                        setWidth(jsonWidth ?: geo.lineStringStyle?.lineWidth ?: DEFAULT_STROKE_WIDTH)
                         setClickable(geo.isClickable == true)
                         setVisible(geo.visible != false)
                         setZIndex(geo.zIndex)
@@ -405,7 +404,9 @@ private fun GoogleGeoJsonLayer.applyStylesFrom(geo: GeoJsonLayer) {
                 feature.polygonStyle =
                     GeoJsonPolygonStyle().apply {
                         setStrokeColor(strokeColor)
-                        setStrokeWidth(width)
+                        setStrokeWidth(
+                            jsonWidth ?: geo.polygonStyle?.strokeWidth ?: DEFAULT_STROKE_WIDTH
+                        )
                         this.fillColor = fillColor
                         setClickable(geo.isClickable == true)
                         setVisible(geo.visible != false)
