@@ -12,14 +12,15 @@ plugins {
     alias(libs.plugins.buildkonfig)
 }
 
+fun readMapsApiKey(fileName: String): String? =
+    providers
+        .fileContents(rootProject.layout.projectDirectory.file(fileName))
+        .asText
+        .orNull
+        ?.let { Properties().apply { load(it.reader()) }.getProperty("MAPS_API_KEY") }
+
 val googleMapsApiKey: String by
-    extra(
-        providers
-            .fileContents(rootProject.layout.projectDirectory.file("local.properties"))
-            .asText
-            .orNull
-            ?.let { Properties().apply { load(it.reader()) }.getProperty("MAPS_API_KEY") } ?: ""
-    )
+    extra(readMapsApiKey("local.properties") ?: readMapsApiKey("local.defaults.properties") ?: "")
 
 kotlin {
     jvmToolchain(17)
