@@ -3,7 +3,7 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 plugins {
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.jetBrains.compose)
     alias(libs.plugins.jetBrains.dokka)
     alias(libs.plugins.jetBrains.kotlin.multiplatform)
@@ -14,9 +14,13 @@ plugins {
 kotlin {
     explicitApi()
     jvmToolchain(17)
-    androidTarget { publishLibraryVariants("release") }
+    android {
+        namespace = "com.swmansion.kmpmaps.googlemaps"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+    }
 
-    listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach { iosTarget ->
+    listOf(iosArm64(), iosSimulatorArm64()).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "google-maps"
             isStatic = true
@@ -43,27 +47,15 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(compose.components.resources)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.runtime)
-            implementation(compose.ui)
+            implementation(libs.jetBrains.compose.components.resources)
+            implementation(libs.jetBrains.compose.foundation)
+            implementation(libs.jetBrains.compose.material3)
+            implementation(libs.jetBrains.compose.runtime)
+            implementation(libs.jetBrains.compose.ui)
             implementation(libs.jetBrains.androidX.lifecycle.runtimeCompose)
             implementation(libs.jetBrains.androidX.lifecycle.viewmodelCompose)
             api(project(":kmp-maps:core"))
         }
-    }
-}
-
-android {
-    namespace = "com.swmansion.kmpmaps.googlemaps"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    defaultConfig { minSdk = libs.versions.android.minSdk.get().toInt() }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 
